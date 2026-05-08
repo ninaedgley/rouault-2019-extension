@@ -1,0 +1,50 @@
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Jupyter & IPython
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+.jupyter/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# MATLAB scripts (original code - not needed for Python replication)
+scripts/
+*.m~
+*.asv
+
+# Setup documentation (local development notes)
+SETUP.md
+
+# Keep src/ tracked (has utils.py)
+# src/  # Commented out - we want to track src/
+
+# Outputs (if you want to track manually)
+# outputs/
+.DS_Store
+
+# MATLAB
+*.m~
+*.asv
+
+scripts/
+
+SETUP.md
