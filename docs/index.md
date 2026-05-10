@@ -82,7 +82,7 @@ All analyses are in Jupyter notebooks: [github.com/ninaedgley/rouault-exp3-repli
 - `02_replication.ipynb` : statistical analyses and figure replications
 - `03_metad.ipynb` : meta-d' translation to Python, MLE and validation
 
-Figures can be found under `outputs/`.
+Figures can be found under `docs/figures/`.
 
 ---
 

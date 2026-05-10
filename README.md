@@ -2,7 +2,7 @@
 Python replication of key analyses from Rouault, Dayan, & Fleming (2019), *Forming global estimates of self-performance from local confidence*, Nature Communications.
 [Full write-up](https://ninaedgley.github.io/rouault-exp3-replication/)
 
-The replication focused on Experiment 3's core analyses, originally implemented in MATLAB, but reimplemented in Python. These incude:
+The replication focused on Experiment 3's core analyses, originally implemented in MATLAB, but reimplemented in Python. These include:
 - Confidence x difficulty interaction (paired t-tests)
 - Logistic regression: confidence predicts task choice beyond accuracy and RT (ΔBIC = 22.4)
 - Meta-d' MLE fitting (Maniscalco & Lau, 2012) translated from MATLAB to Python
