@@ -1,6 +1,6 @@
 # Rouault et al. (2019) Replication Analyses
 Python replication of key analyses from Rouault, Dayan, & Fleming (2019), *Forming global estimates of self-performance from local confidence*, Nature Communications.
-[Full write-up](https://ninaedgley.github.io/rouault-exp3-replication-main)
+[Full write-up](https://ninaedgley.github.io/rouault-exp3-replication/)
 
 The replication focused on Experiment 3's core analyses, originally implemented in MATLAB, but reimplemented in Python. These incude:
 - Confidence x difficulty interaction (paired t-tests)

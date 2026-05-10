@@ -13,7 +13,7 @@ I decided to replicate Rouault, Dayan, & Fleming's *Forming global estimates of 
 
 ---
 
-## Rriginal experiment
+## Original experiment
 
 Rouault, Dayan, & Fleming developed a perceptual decision-making paradigm to investigate how external feedback and local decision confidence relate to global self-performance estimates, and how these factors are changed in the absence of feedback. Over the course of 3 different experiments, participants were asked to complete 6 short learning blocks that interleaved 2 tasks. Potential tasks varied on 2 dimensions: difficulty (Easy, Difficult), and feedback (Feedback, No Feedback), resulting in 6 task pairings. At the end of each learning block, participants rated (1) which task should be used to calculate a monetary bonus based on their performance at the chosen task, and (2) their overall ability at each task on a continuous scale. 
 
@@ -32,7 +32,7 @@ For the purposes of this replication, I focused on Experiment 3, replicating key
 I took the [publicly available data from the Rouault repository](https://github.com/marionrouault/RouaultDayanFleming) and reimplemented the core analyses in Python (paired t-tests, ANOVA, logistic regression model). The original code was in MATLAB.
 
 The main technical challenge was the meta-d' computation, rather than the statistical analyses - the repository contained `scripts/`, which held MATLAB code for replication. I translated these into standard Python, prioritising the key figures for Experiment 3.
-The original paper used the MATLAB fit_meta_d_MLE toolbox (Maniscalco & Lau, 2012), whilst the hierarchical Bayesian extension ([Fleming, 2017](https://github.com/metacoglab/HMeta-d)) required JAGS or R. I translated the MLE fitting procedure into Python using `scipy.optimize`, implemented the SDT model and the constrained optimisation over meta-d' and the type-2 criteria. I used Claude Code to help me debug the coordinate-shifted parameterisation, which took several attempts to get right. The nuts and bolts are correct - I tested outputs against the pre-computed ratios contained in the original repository (`mratios`), and got a near 1-1 correspondence.
+The original paper used the MATLAB fit_meta_d_MLE toolbox [Maniscalco & Lau, 2012](https://psycnet.apa.org/record/2012-05338-034), whilst the hierarchical Bayesian extension ([Fleming, 2017](https://github.com/metacoglab/HMeta-d)) required JAGS or R. I translated the MLE fitting procedure into Python using `scipy.optimize`, implemented the SDT model and the constrained optimisation over meta-d' and the type-2 criteria. I used Claude Code to help me debug the coordinate-shifted parameterisation, which took several attempts to get right. The nuts and bolts are correct - I tested outputs against the pre-computed ratios contained in the original repository (`mratios`), and got a near 1-1 correspondence.
 The other challenge was data wrangling: the original data lived in nested MATLAB structures, which I had to extract from `Exp3.mat` using `scipy.io.loadmat`. The library clearly had its use! This was my first time working with MATLAB, so I ran into a few walls in the beginning around response count arrays, formats, and indexing. Once the syntax was figured out, the process was straightforward.
 
 As mentioned above, I validated the implementation by comparing the Python MLE m-ratio estimates against the pre-computed values in the original data file. They match to the ~third decimal place (Easy: 0.858 vs 0.858; Difficult: 0.738 vs 0.740).
@@ -78,9 +78,9 @@ Metacognitive efficiency, measured here as M-ratio (meta-d' / d'), captures how 
 ## Code
 
 All analyses are in Jupyter notebooks: [github.com/ninaedgley/rouault-exp3-replication](https://github.com/ninaedgley/rouault-exp3-replication).
-`01_load_data.ipynb` : preprocessing, MATLAB file extraction
-`02_replication.ipynb` : statistical analyses and figure replications
-`03_metad.ipynb` : meta-d' translation to Python, MLE and validation
+- `01_load_data.ipynb` : preprocessing, MATLAB file extraction
+- `02_replication.ipynb` : statistical analyses and figure replications
+- `03_metad.ipynb` : meta-d' translation to Python, MLE and validation
 
 Figures can be found under `outputs/`.
 
@@ -88,9 +88,9 @@ Figures can be found under `outputs/`.
 
 ## Takeaways
 
-Overall, I was surprised at how my time was spent within this replication. I had expected for the Python translation to be most time-intensive, only to realise that it was actually the process of understanding the repository's data structures (particularly as they lived in MATLAB - this being my first time using the language). I spent several hours figuring out which variables mapped to which analysis, idem for the files, and trying to understand the contents of various structures from their shapes.
+Overall, I was surprised at how my time was spent. I had gone in expecting for the Python translation to be most time-intensive, only to realise that it was actually the process of understanding the repository's data structures (particularly as they lived in MATLAB - this being my first time using the language). I spent quite a while figuring out which variables mapped to which analysis, idem for the files, and trying to understand the contents of various structures from their shapes.
 
-The paper was clear, and I really enjoyed using meta-d' and hmeta-d' : I didn't end up replicating the hierarchical model, but I read through the [HMeta-d toolbox](https://github.com/metacoglab/HMeta-d), and [related paper](https://academic.oup.com/nc/article/2017/1/nix007/3748261?login=false). I'd previously worked on simple SDT models, so combining the hierarchical Bayesian extension with the Python translation (which required understanding the nuts and bolts much more than I previously did + understanding type-2 criterion and how to incorporate them confidence-graded paradigms) was a great project to learn more. The coordinate-shifted parameterisation in particular was valuable, because it forced me to revisit optimisation relative to free parameters - it took a second to understand why the first attempts were unstable. Eventually ceded to Claude on the code, but really enjoyed working through it conceptually.
+The paper was clear, and I really enjoyed digging into the original meta-d' and Fleming's extension hmeta-d' : I didn't end up replicating the hierarchical model, but read through the [HMeta-d toolbox](https://github.com/metacoglab/HMeta-d), and [related paper](https://academic.oup.com/nc/article/2017/1/nix007/3748261?login=false). I'd previously worked on simple SDT models, so combining the hierarchical Bayesian extension with the Python translation (which required understanding the nuts and bolts much more than I previously did + understanding type-2 criterion and how to incorporate them confidence-graded paradigms) was a great learning project. The coordinate-shifted parameterisation in particular was valuable, because it forced me to revisit optimisation relative to free parameters - it took a second to understand why the first attempts were unstable. Eventually ceded to Claude on the code for that section, but really enjoyed working through it conceptually.
 
 ---
 
