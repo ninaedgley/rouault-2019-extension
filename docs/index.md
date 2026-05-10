@@ -13,7 +13,7 @@ I decided to replicate Rouault, Dayan, & Fleming's *Forming global estimates of 
 
 ---
 
-## The original experiment
+## Rriginal experiment
 
 Rouault, Dayan, & Fleming developed a perceptual decision-making paradigm to investigate how external feedback and local decision confidence relate to global self-performance estimates, and how these factors are changed in the absence of feedback. Over the course of 3 different experiments, participants were asked to complete 6 short learning blocks that interleaved 2 tasks. Potential tasks varied on 2 dimensions: difficulty (Easy, Difficult), and feedback (Feedback, No Feedback), resulting in 6 task pairings. At the end of each learning block, participants rated (1) which task should be used to calculate a monetary bonus based on their performance at the chosen task, and (2) their overall ability at each task on a continuous scale. 
 
@@ -27,7 +27,7 @@ For the purposes of this replication, I focused on Experiment 3, replicating key
 
 ---
 
-## What I did
+## Replication
 
 I took the [publicly available data from the Rouault repository](https://github.com/marionrouault/RouaultDayanFleming) and reimplemented the core analyses in Python (paired t-tests, ANOVA, logistic regression model). The original code was in MATLAB.
 
@@ -86,7 +86,7 @@ Figures can be found under `outputs/`.
 
 ---
 
-## What I learned
+## Takeaways
 
 Overall, I was surprised at how my time was spent within this replication. I had expected for the Python translation to be most time-intensive, only to realise that it was actually the process of understanding the repository's data structures (particularly as they lived in MATLAB - this being my first time using the language). I spent several hours figuring out which variables mapped to which analysis, idem for the files, and trying to understand the contents of various structures from their shapes.
 
@@ -94,9 +94,9 @@ The paper was clear, and I really enjoyed using meta-d' and hmeta-d' : I didn't 
 
 ---
 
-## Where this could go
+## Next Steps!
 
-Overall, it would be interesting to extend this into a full implementation of the hierarchical Bayesian HMeta-d' in PyMC (from a technical perspective). Translating it into Python could make the method more accessible. Alternatively - and from a conceptual perspective - I'd love to explore more paradigms on metacognition, unrelated to task performance. Testing, for example, whether people demonstrate varying sensitivity in self-representational properties, rather than objective performance on a task, in a way that can be operationalised or quantified directly.
+It would be interesting to extend this into a full implementation of the hierarchical Bayesian HMeta-d' in PyMC (from a technical perspective). Translating it into Python could make the method more accessible. Alternatively - and from a conceptual perspective - I'd love to explore more paradigms on metacognition, unrelated to task performance. Testing, for example, whether people demonstrate varying sensitivity in self-representational properties, rather than objective performance on a task, in a way that can be operationalised or quantified directly.
 
 ---
 
