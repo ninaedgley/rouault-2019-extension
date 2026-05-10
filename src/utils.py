@@ -28,15 +28,8 @@ def load_exp3(mat_path=None):
     return mat["Exp3"]
 
 def get_project_root():
-    """Get the project root directory."""
     return PROJECT_ROOT
 
 def load_x_ser6_all():
-    """
-    Load and return X_ser6_all as a numpy array.
-    
-    Returns:
-        numpy.ndarray: X_ser6_all data with shape (230, 7)
-    """
     exp3 = load_exp3()
     return np.array(exp3.X_ser6_all, dtype=float)
