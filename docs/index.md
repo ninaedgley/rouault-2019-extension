@@ -4,32 +4,20 @@ title: "Forming global estimates of self-performance from local confidence - ext
 description: "A Python replication + extension of Rouault, Dayan & Fleming (2019)"
 ---
 
-<script>
-window.MathJax = {
-  tex: {
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [],
+    displayMath: [],
     processEscapes: true
   },
-  options: {
-    renderActions: {
-      find_script_mathtex: [10, function (doc) {
-        for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
-          const display = !!node.type.match(/; *mode=display/);
-          const math = new doc.options.MathItem(
-            node.textContent, doc.inputJax[0], display
-          );
-          const text = document.createTextNode('');
-          node.parentNode.replaceChild(text, node);
-          math.start = {node: text, delim: '', n: 0};
-          math.end = {node: text, delim: '', n: 0};
-          doc.math.push(math);
-        }
-      }, '']
-    }
+  TeX: {
+    extensions: ["AMSmath.js", "AMSsymbols.js"]
   }
-};
+});
 </script>
 
-<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML"></script>
 
 # Metacognitive sensitivity, local confidence, and uncertainty
 *Nina Edgley · May 2026*
