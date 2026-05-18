@@ -7,16 +7,29 @@ description: "A Python replication + extension of Rouault, Dayan & Fleming (2019
 <script>
 window.MathJax = {
   tex: {
-    inlineMath: [['\\(', '\\)']],
-    displayMath: [['\\[', '\\]']],
     processEscapes: true
+  },
+  options: {
+    renderActions: {
+      find_script_mathtex: [10, function (doc) {
+        for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+          const display = !!node.type.match(/; *mode=display/);
+          const math = new doc.options.MathItem(
+            node.textContent, doc.inputJax[0], display
+          );
+          const text = document.createTextNode('');
+          node.parentNode.replaceChild(text, node);
+          math.start = {node: text, delim: '', n: 0};
+          math.end = {node: text, delim: '', n: 0};
+          doc.math.push(math);
+        }
+      }, '']
+    }
   }
 };
 </script>
 
-<script defer
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
-</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
 # Metacognitive sensitivity, local confidence, and uncertainty
 *Nina Edgley · May 2026*
@@ -103,7 +116,7 @@ Metacognitive efficiency, measured here as M-ratio (meta-d' / d'), captures how 
 
 In Rouault et al.'s paper, a curious relationship between feedback, confidence, and global SPEs emerges. Confidence tracks performance and hypothetically supports SPE formation. SPE, meanwhile, integrates feedback and confidence. Both depend on performance. 
 
-The paper's hierarchical Bayesian learning model (hereafter \(\mathcal{M}_0\)) explains how subjects form global self-performance estimates by updating Beta-distributed beliefs about task performance. Its learning module conditions update rules on feedback availability: on feedback trials, the posterior is updated via binary outcomes (correct → \(\alpha + 1\); incorrect → \(\beta + 1\)), while on no-feedback trials, it uses graded confidence signals derived from the internal decision variable (\(\alpha + p_{\text{correct}}\), \(\beta + (1 - p_{\text{correct}})\)).
+The paper's hierarchical Bayesian learning model (hereafter <script type="math/tex">\mathcal{M}_0</script>) explains how subjects form global self-performance estimates by updating Beta-distributed beliefs about task performance. Its learning module conditions update rules on feedback availability: on feedback trials, the posterior is updated via binary outcomes (correct → <script type="math/tex">\alpha + 1</script>; incorrect → <script type="math/tex">\beta + 1</script>), while on no-feedback trials, it uses graded confidence signals derived from the internal decision variable (<script type="math/tex">\alpha + p_{\text{correct}}</script>, <script type="math/tex">\beta + (1 - p_{\text{correct}})</script>).
 The model captures the core behavioural patterns well, but consistently underestimates the observed preference for feedback tasks. This, along with several empirical regularities in the data suggest that feedback plays a richer role in SPE formation than a binary update rule can express:
 
 - Trial count only influences SPE formation if feedback is present - no learning effects are shown in no-feedback trials
@@ -117,10 +130,10 @@ I hypothesised two candidate alternative mechanisms, operating at different stag
 2. **Uncertainty Aversion, decision module**: the comparison between accumulated beliefs is sensitive to their precision, rather than their means - it penalises uncertain beliefs at the point of choice, biasing decisions towards feedback (mean-variance utility, λ).
 
 What followed was a comparison of four candidate models, which I've specified and fit. Details below:
-- **\(\mathcal{M}_0\)** - original Bayesian hierarchical learning model
-- **\(\mathcal{M}_\lambda\)** - uncertainty-averse model
-- **\(\mathcal{M}_\eta\)** - cue-integration model
-- **\(\mathcal{M}_{\eta\lambda}\)** - combined model (uncertainty-aversion, cue integration)
+- **<script type="math/tex">\mathcal{M}_0</script>** - original Bayesian hierarchical learning model
+- **<script type="math/tex">\mathcal{M}_\lambda</script>** - uncertainty-averse model
+- **<script type="math/tex">\mathcal{M}_\eta</script>** - cue-integration model
+- **<script type="math/tex">\mathcal{M}_{\eta\lambda}</script>** - combined model (uncertainty-aversion, cue integration)
     
 
 ## Model Architecture
@@ -130,13 +143,13 @@ All four models share the same perceptual module, but differ along 2 dimensions 
 
 ### Perceptual Module
 
-On each trial, the observer receives a noisy sensory signal where \(d_t \in \{-1, +1\}\) encodes the target side, \(k_{ch}\) is perceptual sensitivity (estimated per subject from overall accuracy), and \(\Delta_t\) is the stimulus strength (easy = 60, hard = 24). The observer responds left if \(X_t < 0\), right otherwise:
-\[
+On each trial, the observer receives a noisy sensory signal where <script type="math/tex">d_t \in \{-1, +1\}</script> encodes the target side, <script type="math/tex">k_{ch}</script> is perceptual sensitivity (estimated per subject from overall accuracy), and <script type="math/tex">\Delta_t</script> is the stimulus strength (easy = 60, hard = 24). The observer responds left if <script type="math/tex">X_t < 0</script>, right otherwise:
+<script type="math/tex; mode=display">
 X_t \sim \mathcal{N}(d_t \cdot k_{ch} \cdot \Delta_t, \ 1)
-\]
+</script>
 
-Confidence is derived from the observer's internal model of their own sensitivity (\(k_{conf}\), a free parameter) where \(\sigma(\cdot)\) is the logistic function. This is identical across all four models:
-\[
+Confidence is derived from the observer's internal model of their own sensitivity (<script type="math/tex">k_{conf}</script>, a free parameter) where <script type="math/tex">\sigma(\cdot)</script> is the logistic function. This is identical across all four models:
+<script type="math/tex; mode=display">
 p(\text{correct}_t)
 =
 \begin{cases}
@@ -145,56 +158,56 @@ p(\text{correct}_t)
 1 - \sigma\bigl(2 k_{conf} \Delta_t X_t\bigr)
 & \text{if } X_t \le 0
 \end{cases}
-\]
+</script>
 
    
 ### Learning Module
 
-Each task \(j \in \{1, 2\}\) maintains a Beta posterior \(\text{Beta}(\alpha_j, \beta_j)\), initialised at \(\text{Beta}(6, 3)\).
+Each task <script type="math/tex">j \in \{1, 2\}</script> maintains a Beta posterior <script type="math/tex">\text{Beta}(\alpha_j, \beta_j)</script>, initialised at <script type="math/tex">\text{Beta}(6, 3)</script>.
 
-**\(\mathcal{M}_0\) and \(\mathcal{M}_\lambda\)** use the original update rule:
-\[
+**<script type="math/tex">\mathcal{M}_0</script> and <script type="math/tex">\mathcal{M}_\lambda</script>** use the original update rule:
+<script type="math/tex; mode=display">
 \text{Feedback trial:} \quad \alpha_j \mathrel{+}= \mathbb{1}[\text{correct}], \quad \beta_j \mathrel{+}= \mathbb{1}[\text{incorrect}]
-\]
-\[
+</script>
+<script type="math/tex; mode=display">
 \text{No-feedback trial:} \quad \alpha_j \mathrel{+}= p(\text{correct}_t), \quad \beta_j \mathrel{+}= 1 - p(\text{correct}_t)
-\]
+</script>
 
-**\(\mathcal{M}_\eta\) and \(\mathcal{M}_{\eta\lambda}\)** introduce a cue-integration parameter \(\eta \in [0, 1]\) that governs the relative weight of feedback versus confidence on feedback trials:
-\[
+**<script type="math/tex">\mathcal{M}_\eta</script> and <script type="math/tex">\mathcal{M}_{\eta\lambda}</script>** introduce a cue-integration parameter <script type="math/tex">\eta \in [0, 1]</script> that governs the relative weight of feedback versus confidence on feedback trials:
+<script type="math/tex; mode=display">
 \text{Feedback trial:} \quad \alpha_j \mathrel{+}= \eta \cdot \mathbb{1}[\text{correct}] + (1 - \eta) \cdot p(\text{correct}_t)
-\]
-\[
+</script>
+<script type="math/tex; mode=display">
 \phantom{\text{Feedback trial:}} \quad \beta_j \mathrel{+}= \eta \cdot \mathbb{1}[\text{incorrect}] + (1 - \eta) \cdot (1 - p(\text{correct}_t))
-\]
-\[
+</script>
+<script type="math/tex; mode=display">
 \text{No-feedback trial:} \quad \text{unchanged}
-\]
+</script>
 
-When \(\eta = 1\), this recovers the original binary rule (as confidence is weighted at 0, leaving the original binary update intact). When \(\eta < 1\), even feedback trials incorporate the graded confidence signal. Feedback and confidence are treated as two cues to be integrated rather than as distinct update regimes on feedback v. no-feedback tasks. The total weight increment per trial remains 1 regardless of \(\eta\), preserving the rate of evidence accumulation assumed in the original model.
+When <script type="math/tex">\eta = 1</script>, this recovers the original binary rule (as confidence is weighted at 0, leaving the original binary update intact). When <script type="math/tex">\eta < 1</script>, even feedback trials incorporate the graded confidence signal. Feedback and confidence are treated as two cues to be integrated rather than as distinct update regimes on feedback v. no-feedback tasks. The total weight increment per trial remains 1 regardless of <script type="math/tex">\eta</script>, preserving the rate of evidence accumulation assumed in the original model.
 
     
 ### Decision
   
 At the end of each learning block, the observer chooses between tasks based on their accumulated beliefs.
 
-**\(\mathcal{M}_0\) and \(\mathcal{M}_\eta\)** use the original Monte Carlo comparison (drawing samples from each Beta posterior and computing the probability that one exceeds the other):
-\[
+**<script type="math/tex">\mathcal{M}_0</script> and <script type="math/tex">\mathcal{M}_\eta</script>** use the original Monte Carlo comparison (drawing samples from each Beta posterior and computing the probability that one exceeds the other):
+<script type="math/tex; mode=display">
 P(\text{choose } T_1) = P\bigl(\theta_1 > \theta_2\bigr), \quad \theta_j \sim \text{Beta}(\alpha_j, \beta_j)
-\]
+</script>
 
-**\(\mathcal{M}_\lambda\) and \(\mathcal{M}_{\eta\lambda}\)** replace this with a mean–variance utility approach, introducing uncertainty-aversion via \(\lambda \geq 0\):
-\[
+**<script type="math/tex">\mathcal{M}_\lambda</script> and <script type="math/tex">\mathcal{M}_{\eta\lambda}</script>** replace this with a mean–variance utility approach, introducing uncertainty-aversion via <script type="math/tex">\lambda \geq 0</script>:
+<script type="math/tex; mode=display">
 \mu_j = \frac{\alpha_j}{\alpha_j + \beta_j}, \qquad \sigma^2_j = \frac{\mu_j(1 - \mu_j)}{\alpha_j + \beta_j + 1}
-\]
-\[
+</script>
+<script type="math/tex; mode=display">
 U_j = \mu_j - \lambda \cdot \sigma_j
-\]
+</script>
 
-To compute the probability of task selection for these two models, I computed the approx. Beta posterior analytically (using mean and variance), rather than using the Monte Carlo sampling method. When \(\lambda > 0\), the agent penalises tasks with uncertain posteriors — those with fewer observations or more ambiguous evidence. When \(\lambda = 0\), the mean–variance formulation approximates the Monte Carlo comparison (both essentially reduce to comparing posterior means under the Gaussian approximation to the Beta). This directly captures the preference for feedback tasks at equal performance: feedback trials produce binary (0 or 1) increments, yielding higher effective weighted counts and tighter posteriors than the confidence-based increments on no-feedback trials.
-\[
+To compute the probability of task selection for these two models, I computed the approx. Beta posterior analytically (using mean and variance), rather than using the Monte Carlo sampling method. When <script type="math/tex">\lambda > 0</script>, the agent penalises tasks with uncertain posteriors — those with fewer observations or more ambiguous evidence. When <script type="math/tex">\lambda = 0</script>, the mean–variance formulation approximates the Monte Carlo comparison (both essentially reduce to comparing posterior means under the Gaussian approximation to the Beta). This directly captures the preference for feedback tasks at equal performance: feedback trials produce binary (0 or 1) increments, yielding higher effective weighted counts and tighter posteriors than the confidence-based increments on no-feedback trials.
+<script type="math/tex; mode=display">
 P(\text{choose } T_2) = \Phi\!\left(\frac{U_2 - U_1}{\sqrt{\sigma^2_1 + \sigma^2_2}}\right)
-\]
+</script>
 
 In short, the summary for each model change can be reduced to:
 <table>
@@ -210,58 +223,58 @@ In short, the summary for each model change can be reduced to:
   </thead>
   <tbody>
     <tr>
-      <td>\(\mathcal{M}_0\)</td>
+      <td><script type="math/tex">\mathcal{M}_0</script></td>
       <td>Original (BAY)</td>
       <td>Binary / graded</td>
       <td>Monte Carlo</td>
-      <td>\(k_{conf}\)</td>
-      <td>\(\mathcal{M}_\lambda, \mathcal{M}_\eta, \mathcal{M}_{\eta\lambda}\)</td>
+      <td><script type="math/tex">k_{conf}</script></td>
+      <td><script type="math/tex">\mathcal{M}_\lambda, \mathcal{M}_\eta, \mathcal{M}_{\eta\lambda}</script></td>
     </tr>
     <tr>
-      <td>\(\mathcal{M}_\lambda\)</td>
+      <td><script type="math/tex">\mathcal{M}_\lambda</script></td>
       <td>Uncertainty-averse</td>
       <td>Binary / graded</td>
       <td>Mean–variance</td>
-      <td>\(k_{conf}, \lambda\)</td>
-      <td>\(\mathcal{M}_{\eta\lambda}\)</td>
+      <td><script type="math/tex">k_{conf}, \lambda</script></td>
+      <td><script type="math/tex">\mathcal{M}_{\eta\lambda}</script></td>
     </tr>
     <tr>
-      <td>\(\mathcal{M}_\eta\)</td>
+      <td><script type="math/tex">\mathcal{M}_\eta</script></td>
       <td>Cue-integration</td>
-      <td>\(\eta\)-blended</td>
+      <td><script type="math/tex">\eta</script>-blended</td>
       <td>Monte Carlo</td>
-      <td>\(k_{conf}, \eta\)</td>
-      <td>\(\mathcal{M}_{\eta\lambda}\)</td>
+      <td><script type="math/tex">k_{conf}, \eta</script></td>
+      <td><script type="math/tex">\mathcal{M}_{\eta\lambda}</script></td>
     </tr>
     <tr>
-      <td>\(\mathcal{M}_{\eta\lambda}\)</td>
+      <td><script type="math/tex">\mathcal{M}_{\eta\lambda}</script></td>
       <td>Combined</td>
-      <td>\(\eta\)-blended</td>
+      <td><script type="math/tex">\eta</script>-blended</td>
       <td>Mean–variance</td>
-      <td>\(k_{conf}, \eta, \lambda\)</td>
+      <td><script type="math/tex">k_{conf}, \eta, \lambda</script></td>
       <td>—</td>
     </tr>
   </tbody>
 </table>
 
 Given the nested structure of the different models, this approach also makes it clear where potentially improvements in fitting procedures come from - parameter, module, decision rules. 
-- If \(\mathcal{M}_\eta\) wins, the feedback bias is best explained by how evidence is accumulated. 
-- If \(\mathcal{M}_\lambda\) wins, it is explained by how evidence is compared. 
-- If \(\mathcal{M}_{\eta\lambda}\) wins, both stages contribute. 
-- If \(\mathcal{M}_0\) wins, the original specification is already sufficient and the bias is adequately captured by the structural difference between binary and graded updates.
+- If <script type="math/tex">\mathcal{M}_\eta</script> wins, the feedback bias is best explained by how evidence is accumulated. 
+- If <script type="math/tex">\mathcal{M}_\lambda</script> wins, it is explained by how evidence is compared. 
+- If <script type="math/tex">\mathcal{M}_{\eta\lambda}</script> wins, both stages contribute. 
+- If <script type="math/tex">\mathcal{M}_0</script> wins, the original specification is already sufficient and the bias is adequately captured by the structural difference between binary and graded updates.
 
    
 ## Model Fitting
 
-All models were fit to the Experiment 2 data (\(n = 29\), 30 task choices per subject, as in the original paper). Since the MATLAB files contained aggregate data (analyses, summary stats, etc.), I reconstructed trial-level data manually. Specifically, I derived \(k_{ch}\) per subject from mean accuracy via
+All models were fit to the Experiment 2 data (<script type="math/tex">n = 29</script>, 30 task choices per subject, as in the original paper). Since the MATLAB files contained aggregate data (analyses, summary stats, etc.), I reconstructed trial-level data manually. Specifically, I derived <script type="math/tex">k_{ch}</script> per subject from mean accuracy via
 
-\[
+<script type="math/tex; mode=display">
 d' = \Phi^{-1}(\bar{p}) - \Phi^{-1}(1 - \bar{p}), \qquad k_{ch} = \frac{d'}{2\,\bar{\delta}}
-\]
+</script>
 
-where \(\bar{p}\) is mean accuracy pooled across tasks and pairings, and \(\bar{\delta} = 42\) is the average dot difference across easy (\(\delta = 60\)) and difficult (\(\delta = 24\)) conditions. Task choices were taken from `task1val`. This can be found in `04_extension.ipynb`: I tested it with a check on the kch range, and various subject summaries.
+where <script type="math/tex">\bar{p}</script> is mean accuracy pooled across tasks and pairings, and <script type="math/tex">\bar{\delta} = 42</script> is the average dot difference across easy (<script type="math/tex">\delta = 60</script>) and difficult (<script type="math/tex">\delta = 24</script>) conditions. Task choices were taken from `task1val`. This can be found in `04_extension.ipynb`: I tested it with a check on the kch range, and various subject summaries.
 
-Otherwise, I initialised the model fits using coarse-grid parameter combinations first (over \(k_{conf}\), \(\eta\), \(\lambda\) grids), then followed with Limited-memory Broyden-Fletcher-Goldfarb-Shanno with Bounds refinement (L-BFGS-B!). For model comparison, I used standard BIC at the subject level and a fixed-effects approximation for group-level inference.
+Otherwise, I initialised the model fits using coarse-grid parameter combinations first (over <script type="math/tex">k_{conf}</script>, <script type="math/tex">\eta</script>, <script type="math/tex">\lambda</script> grids), then followed with Limited-memory Broyden-Fletcher-Goldfarb-Shanno with Bounds refinement (L-BFGS-B!). For model comparison, I used standard BIC at the subject level and a fixed-effects approximation for group-level inference.
 
 ![Lambda x Eta distribution + BIC comparison](figures/04_model_comparison_params.png)
 *Figure 5: Parameter fits - individual and combined - and BIC comparison*
@@ -275,7 +288,7 @@ A summary of the results can be compressed to:
   <thead>
     <tr>
       <th>Model</th>
-      <th>\(k\)</th>
+      <th><script type="math/tex">k</script></th>
       <th>Mean NLL</th>
       <th>Mean BIC</th>
       <th>N best (BIC)</th>
@@ -283,28 +296,28 @@ A summary of the results can be compressed to:
   </thead>
   <tbody>
     <tr>
-      <td>\(\mathcal{M}_0\) (Original)</td>
+      <td><script type="math/tex">\mathcal{M}_0</script> (Original)</td>
       <td>1</td>
       <td>17.31</td>
       <td>38.03</td>
       <td><strong>17</strong></td>
     </tr>
     <tr>
-      <td>\(\mathcal{M}_\lambda\) (Uncertainty-averse)</td>
+      <td><script type="math/tex">\mathcal{M}_\lambda</script> (Uncertainty-averse)</td>
       <td>2</td>
       <td>15.74</td>
       <td>38.28</td>
       <td><strong>12</strong></td>
     </tr>
     <tr>
-      <td>\(\mathcal{M}_\eta\) (Cue-integration)</td>
+      <td><script type="math/tex">\mathcal{M}_\eta</script> (Cue-integration)</td>
       <td>2</td>
       <td>17.10</td>
       <td>41.00</td>
       <td>0</td>
     </tr>
     <tr>
-      <td>\(\mathcal{M}_{\eta\lambda}\) (Combined)</td>
+      <td><script type="math/tex">\mathcal{M}_{\eta\lambda}</script> (Combined)</td>
       <td>3</td>
       <td>15.76</td>
       <td>41.72</td>
@@ -313,34 +326,34 @@ A summary of the results can be compressed to:
   </tbody>
 </table>
 
-At the group level, the original model remains preferred (BIC weight = 0.976). However, the picture is more nuanced at the individual level: 12 of 29 subjects are best fit by \(\mathcal{M}_\lambda\), with several showing substantial improvements in likelihood (e.g., \(\Delta\)NLL = 6.0, 5.2, 3.5 for the strongest cases).
-More importantly, \(\mathcal{M}_\lambda\) predicts the feedback-biased task selection (see below - cases ENF-EF, ENF-DF, and EF-DNF, in which the selection of the feedback-driven task is more visible). 
+At the group level, the original model remains preferred (BIC weight = 0.976). However, the picture is more nuanced at the individual level: 12 of 29 subjects are best fit by <script type="math/tex">\mathcal{M}_\lambda</script>, with several showing substantial improvements in likelihood (e.g., <script type="math/tex">\Delta</script>NLL = 6.0, 5.2, 3.5 for the strongest cases).
+More importantly, <script type="math/tex">\mathcal{M}_\lambda</script> predicts the feedback-biased task selection (see below - cases ENF-EF, ENF-DF, and EF-DNF, in which the selection of the feedback-driven task is more visible). 
 
-Group-level mean absolute error confirms the same ordering: \(\mathcal{M}_\lambda\) (MAE = 0.087) substantially outperforms \(\mathcal{M}_0\) (0.127), \(\mathcal{M}_\eta\) (0.134), and \(\mathcal{M}_{\eta\lambda}\) (0.097) in reproducing observed task choice frequencies across pairings and durations.
+Group-level mean absolute error confirms the same ordering: <script type="math/tex">\mathcal{M}_\lambda</script> (MAE = 0.087) substantially outperforms <script type="math/tex">\mathcal{M}_0</script> (0.127), <script type="math/tex">\mathcal{M}_\eta</script> (0.134), and <script type="math/tex">\mathcal{M}_{\eta\lambda}</script> (0.097) in reproducing observed task choice frequencies across pairings and durations.
 
 ![Observed T1 choice frequency by pairing × duration](figures/04_4model_task_choice_frequency_comparison.png)
-*Figure 6: Observed task choice frequency comparison across models, relative to pairing and duration - stronger fit on feedback-driven task selection for the \(\mathcal{M}_\lambda\).*
+*Figure 6: Observed task choice frequency comparison across models, relative to pairing and duration - stronger fit on feedback-driven task selection for the <script type="math/tex">\mathcal{M}_\lambda</script>.*
 
-The model fits show a strong positive skew in uncertainty aversion: most participants show none, with \(\lambda = 0\), with a long positive tail for the remaining ~41%. My interpretation is that the \(\mathcal{M}_\lambda\) captures and better explains the behaviour of participants with positive \(\lambda\) values, hence the better individual performance. 
-For subjects with no uncertainty aversion (\(\lambda \approx 0\)), NLL improvements relative to \(\mathcal{M}_0\) likely reflect the deterministic Gaussian approximation being more stable than Monte Carlo sampling rather than a genuine effect of lambda. Subjects with \(\lambda > 0\) provide the cleaner evidence for the extended mechanism, with the largest NLL change values (6.0, 5.2, 3.5) concentrated in this group.
+The model fits show a strong positive skew in uncertainty aversion: most participants show none, with <script type="math/tex">\lambda = 0</script>, with a long positive tail for the remaining ~41%. My interpretation is that the <script type="math/tex">\mathcal{M}_\lambda</script> captures and better explains the behaviour of participants with positive <script type="math/tex">\lambda</script> values, hence the better individual performance. 
+For subjects with no uncertainty aversion (<script type="math/tex">\lambda \approx 0</script>), NLL improvements relative to <script type="math/tex">\mathcal{M}_0</script> likely reflect the deterministic Gaussian approximation being more stable than Monte Carlo sampling rather than a genuine effect of lambda. Subjects with <script type="math/tex">\lambda > 0</script> provide the cleaner evidence for the extended mechanism, with the largest NLL change values (6.0, 5.2, 3.5) concentrated in this group.
 
-The cue-integration model \(\mathcal{M}_\eta\) and combined model \(\mathcal{M}_{\eta\lambda}\) are decisively ruled out. Neither win for any subjects.
-- \(\mathcal{M}_\eta\) and its mean NLL (17.10) barely improves on the original (17.31), which isn't sufficient to justify the additional parameter. The fitted \(\eta\) distribution is bimodal, clustering at the bounds (\(\eta \approx 0\) or \(\eta \approx 1\)) with almost no subjects in between. From my understanding, this points to non-identifiability: the likelihood surface is essentially flat with respect to \(\eta\), with the parameter not doing meaningful work.
-- \(\mathcal{M}_{\eta\lambda}\) almost always recovers the \(\mathcal{M}_\lambda\) fit exactly (\(\eta\) collapses to 1.0 whenever \(\lambda > 0\)), confirming that the two mechanisms do not interact. Adding \(\eta\) to a model that already has \(\lambda\) does not provide additional explanatory power.
+The cue-integration model <script type="math/tex">\mathcal{M}_\eta</script> and combined model <script type="math/tex">\mathcal{M}_{\eta\lambda}</script> are decisively ruled out. Neither win for any subjects.
+- <script type="math/tex">\mathcal{M}_\eta</script> and its mean NLL (17.10) barely improves on the original (17.31), which isn't sufficient to justify the additional parameter. The fitted <script type="math/tex">\eta</script> distribution is bimodal, clustering at the bounds (<script type="math/tex">\eta \approx 0</script> or <script type="math/tex">\eta \approx 1</script>) with almost no subjects in between. From my understanding, this points to non-identifiability: the likelihood surface is essentially flat with respect to <script type="math/tex">\eta</script>, with the parameter not doing meaningful work.
+- <script type="math/tex">\mathcal{M}_{\eta\lambda}</script> almost always recovers the <script type="math/tex">\mathcal{M}_\lambda</script> fit exactly (<script type="math/tex">\eta</script> collapses to 1.0 whenever <script type="math/tex">\lambda > 0</script>), confirming that the two mechanisms do not interact. Adding <script type="math/tex">\eta</script> to a model that already has <script type="math/tex">\lambda</script> does not provide additional explanatory power.
    
 
 ## Conclusions
 
 The four-way comparison provides a clean dissociation between parameters, modules, and the effect of various architectures and decision rules on the final predictions. To the extent that the original model's feedback bias can be reduced, the mechanism sits in the **decision module**, not the learning module.
 
-The original model already distinguishes between feedback and no-feedback trials at the level of evidence accumulation. The \(\eta\) extension tested whether this categorical distinction was too rigid, proposing instead a graded / weighted blend of confidence and feedback on each trial. This hypothesis returned null : the learning module's original specification (feedback as a qualitatively different type of evidence) was already appropriate. 
+The original model already distinguishes between feedback and no-feedback trials at the level of evidence accumulation. The <script type="math/tex">\eta</script> extension tested whether this categorical distinction was too rigid, proposing instead a graded / weighted blend of confidence and feedback on each trial. This hypothesis returned null : the learning module's original specification (feedback as a qualitatively different type of evidence) was already appropriate. 
 
-What does have an effect is changing how accumulated evidence is evaluated, rather than formed. The \(\lambda\) parameter captures uncertainty aversion at the point of task choice: subjects with high \(\lambda\) penalise tasks where their performance belief is imprecise. Because feedback trials produce binary increments (0 or 1) while no-feedback trials produce fractional increments (\(p_{\text{correct}} \in (0,1)\)), feedback posteriors are tighter for feedback trials.   
+What does have an effect is changing how accumulated evidence is evaluated, rather than formed. The <script type="math/tex">\lambda</script> parameter captures uncertainty aversion at the point of task choice: subjects with high <script type="math/tex">\lambda</script> penalise tasks where their performance belief is imprecise. Because feedback trials produce binary increments (0 or 1) while no-feedback trials produce fractional increments (<script type="math/tex">p_{\text{correct}} \in (0,1)</script>), feedback posteriors are tighter for feedback trials.   
 An uncertainty-averse agent will therefore prefer the feedback task even when both posteriors have similar means, which resolves the feedback discrepancy the original model underestimates.
 
 This is consistent with broader findings in the metacognition literature, providing preliminary evidence that the precision of self-performance beliefs, not just their content, influences higher-order evaluation. 
 
-That said, the original model remains the group-level winner. The BIC penalty for \(\lambda\) (\(\ln(30) \approx 3.4\) nats) outweighs the likelihood improvement for the majority of subjects. This means that for most participants, the original model's implicit precision asymmetry is already sufficient to explain task choice. Only a subgroup (~41%) shows an additional, explicit sensitivity to posterior uncertainty at the decision stage. Whether this subgroup can be characterised by independent measures (e.g., metacognitive efficiency, anxiety, intolerance of uncertainty) would be the natural next question I'd want to explore.
+That said, the original model remains the group-level winner. The BIC penalty for <script type="math/tex">\lambda</script> (<script type="math/tex">\ln(30) \approx 3.4</script> nats) outweighs the likelihood improvement for the majority of subjects. This means that for most participants, the original model's implicit precision asymmetry is already sufficient to explain task choice. Only a subgroup (~41%) shows an additional, explicit sensitivity to posterior uncertainty at the decision stage. Whether this subgroup can be characterised by independent measures (e.g., metacognitive efficiency, anxiety, intolerance of uncertainty) would be the natural next question I'd want to explore.
 
 ---
 
