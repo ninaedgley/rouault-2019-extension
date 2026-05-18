@@ -1,14 +1,40 @@
 ---
 layout: default
-title: "Extension - *Forming global estimates of self-performance from local confidence*"
+title: "Forming global estimates of self-performance from local confidence - extension"
 description: "A Python replication + extension of Rouault, Dayan & Fleming (2019)"
 ---
 
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      inlineMath:  [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    options: {
+      renderActions: {
+        find_script_mathtex: [10, function (doc) {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/);
+            const math = new doc.options.MathItem(
+              node.textContent, doc.inputJax[0], display
+            );
+            const text = document.createTextNode('');
+            node.parentNode.replaceChild(text, node);
+            math.start = {node: text, delim: '', n: 0};
+            math.end   = {node: text, delim: '', n: 0};
+            doc.math.push(math);
+          }
+        }, '']
+      }
+    }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
 # Metacognitive sensitivity, local confidence, and uncertainty
 *Nina Edgley · May 2026*
 *Rouault M., Dayan P. & Fleming S. M. Forming global estimates of self-performance from local confidence. Nature Communications (2019)*
+
 ---
 
 Self-representation refers to an agent's set of self-referential models, spanning from embodiment, interoceptive inference, to narrative models. Metacognition is a key process in the development, sophistication, and change of these models. It grants agents the capacity to learn, to reflect, and to adapt to changing circumstances - or, to adapt circumstances to one's goals.    
@@ -22,7 +48,7 @@ Below, I describe the replication of Experiment 3 (original experiment design - 
 
 ---
 
-
+   
 ## Original experiment design
 
 Rouault, Dayan, & Fleming developed a perceptual decision-making paradigm to investigate how external feedback and local decision confidence relate to global self-performance estimates, and how these factors are changed in the absence of feedback. Over the course of 3 different experiments, participants were asked to complete 6 short learning blocks that interleaved 2 tasks. Potential tasks varied on 2 dimensions: difficulty (Easy, Difficult), and feedback (Feedback, No Feedback), resulting in 6 task pairings. At the end of each learning block, participants rated (1) which task should be used to calculate a monetary bonus based on their performance at the chosen task, and (2) their overall ability at each task on a continuous scale. 
@@ -35,7 +61,7 @@ Both measures operationalised global SPEs, and - when evaluated across the 6 pot
 
 For the purposes of this replication, I focused on Experiment 3, replicating key figures, metacognitive sensitivity fits, and statistical analyses, described below.
 
-
+    
 
 ## Replication
 
@@ -47,12 +73,12 @@ As an aside, data wrangling also took more time than expected : the original dat
 
 As mentioned above, I validated the implementation by comparing the Python MLE m-ratio estimates against the pre-computed values in the original data file. They match to the ~third decimal place (Easy: 0.858 vs 0.858; Difficult: 0.738 vs 0.740).
 
-
+       
 
 ## Results
 
 The primary analyses and figures run for Experiment 3 focused on assessing the interaction between feedback, confidence, difficulty, and objective performance. 
-
+  
 ### Confidence predicts task choice
 This relationship was tested using 2 paired within-subjects t-tests. Confidence was significantly higher for easy than difficult trials (p < 0.001), confirming the manipulation works.
 
@@ -73,7 +99,7 @@ Finally, no-feedback conditions were also analysed through the lens of task choi
 ![Task choice frequency](figures/02_fig5c_task_choice_performance.png)
 *Figure 3: Participants increasingly chose the task where they had higher confidence.*
 
-
+   
 ### Metacognitive efficiency predicts global self-evaluation
 
 Metacognitive efficiency, measured here as M-ratio (meta-d' / d'), captures how well someone's confidence ratings distinguish their own correct from incorrect responses, independent of actual task performance. An M-ratio of 1 means confidence is informationally optimal, sub-1 that information is lost between deciding and rating confidence. The key results for the paper was that metacognitive efficiency correlated with global SPEs for both MLE and AUROC-2 (non-parametric alternative), with AUROC-2 showing a stronger correlation.
@@ -84,6 +110,7 @@ Metacognitive efficiency, measured here as M-ratio (meta-d' / d'), captures how 
 *Figure 4: Left — Metacognitive efficiency (M-ratio, MLE) correlates with global self-performance estimates (ρ = 0.34, p = 0.021). AUROC2 shows a stronger version of the same relationship (ρ = 0.45, p = 0.002).*
 
 ---
+     
 
 ## Extension Motivation
 
@@ -107,19 +134,24 @@ What followed was a comparison of four candidate models, which I've specified an
 - **$\mathcal{M}_\lambda$** - uncertainty-averse model
 - **$\mathcal{M}_\eta$** - cue-integration model
 - **$\mathcal{M}_{\eta\lambda}$** - combined model (uncertainty-aversion, cue integration)
-
+    
 
 ## Model Architecture
+   
 All four models share the same perceptual module, but differ along 2 dimensions - how evidence is accumulated (perceptual learning module), and how it then drives the task choice (SPE).
+    
 
 ### Perceptual Module
+
 On each trial, the observer receives a noisy sensory signal where $d_t \in \{-1, +1\}$ encodes the target side, $k_{ch}$ is perceptual sensitivity (estimated per subject from overall accuracy), and $\Delta_t$ is the stimulus strength (easy = 60, hard = 24). The observer responds left if $X_t < 0$, right otherwise:
 $$X_t \sim \mathcal{N}(d_t \cdot k_{ch} \cdot \Delta_t, \ 1)$$
 
 Confidence is derived from the observer's internal model of their own sensitivity ($k_{conf}$, a free parameter) where $\sigma(\cdot)$ is the logistic function. This is identical across all four models:
 $$p(\text{correct}_t) = \begin{cases} \sigma\bigl(2 \, k_{conf} \cdot \Delta_t \cdot X_t\bigr) & \text{if } X_t > 0 \\[4pt] 1 - \sigma\bigl(2 \, k_{conf} \cdot \Delta_t \cdot X_t\bigr) & \text{if } X_t \leq 0 \end{cases}$$
 
+   
 ### Learning Module
+
 Each task $j \in \{1, 2\}$ maintains a Beta posterior $\text{Beta}(\alpha_j, \beta_j)$, initialised at $\text{Beta}(6, 3)$.
 
 **$\mathcal{M}_0$ and $\mathcal{M}_\lambda$** use the original update rule:
@@ -133,7 +165,9 @@ Each task $j \in \{1, 2\}$ maintains a Beta posterior $\text{Beta}(\alpha_j, \be
 
 When $\eta = 1$, this recovers the original binary rule (as confidence is weighted at 0, leaving the original binary update intact). When $\eta < 1$, even feedback trials incorporate the graded confidence signal. Feedback and confidence are treated as two cues to be integrated rather than as distinct update regimes on feedback v. no-feedback tasks. The total weight increment per trial remains 1 regardless of $\eta$, preserving the rate of evidence accumulation assumed in the original model.
 
+    
 ### Decision
+  
 At the end of each learning block, the observer chooses between tasks based on their accumulated beliefs.
 
 **$\mathcal{M}_0$ and $\mathcal{M}_\eta$** use the original Monte Carlo comparison (drawing samples from each Beta posterior and computing the probability that one exceeds the other):
@@ -160,7 +194,7 @@ Given the nested structure of the different models, this approach also makes it 
 - If $\mathcal{M}_{\eta\lambda}$ wins, both stages contribute. 
 - If $\mathcal{M}_0$ wins, the original specification is already sufficient and the bias is adequately captured by the structural difference between binary and graded updates.
 
-
+   
 ## Model Fitting
 
 All models were fit to the Experiment 2 data ($n = 29$, 30 task choices per subject, as in the original paper). Since the MATLAB files contained aggregate data (analyses, summary stats, etc.), I reconstructed trial-level data manually. Specifically, I derived $k_{ch}$ per subject from mean accuracy via $$d' = \Phi^{-1}(\bar{p}) - \Phi^{-1}(1 - \bar{p}), \qquad k_{ch} = \frac{d'}{2\,\bar{\delta}}$$ where $\bar{p}$ is mean accuracy pooled across tasks and pairings, and $\bar{\delta} = 42$ is the average dot difference across easy ($\delta = 60$) and difficult ($\delta = 24$) conditions. Task choices were taken from `task1val`. This can be found in `04_extension.ipynb`: I tested it with a check on the kch range, and various subject summaries.
@@ -169,8 +203,10 @@ Otherwise, I initialised the model fits using coarse-grid parameter combinations
 
 ![Lambda x Eta distribution + BIC comparison](figures/04_model_comparison_params.png)
 *Figure 5: Parameter fits - individual and combined - and BIC comparison*
+  
 
 ### Results
+  
 A summary of the results can be compressed to:
 
 | Model | $k$ | Mean NLL | Mean BIC | N best (BIC) |
@@ -194,7 +230,7 @@ For subjects with no uncertainty aversion ($\lambda \approx 0$), NLL improvement
 The cue-integration model $\mathcal{M}_\eta$ and combined model $\mathcal{M}_{\eta\lambda}$ are decisively ruled out. Neither win for any subjects.
 - $\mathcal{M}_\eta$ and its mean NLL (17.10) barely improves on the original (17.31), which isn't sufficient to justify the additional parameter. The fitted $\eta$ distribution is bimodal, clustering at the bounds ($\eta \approx 0$ or $\eta \approx 1$) with almost no subjects in between. From my understanding, this points to non-identifiability: the likelihood surface is essentially flat with respect to $\eta$, with the parameter not doing meaningful work.
 - $\mathcal{M}_{\eta\lambda}$ almost always recovers the $\mathcal{M}_\lambda$ fit exactly ($\eta$ collapses to 1.0 whenever $\lambda > 0$), confirming that the two mechanisms do not interact. Adding $\eta$ to a model that already has $\lambda$ does not provide additional explanatory power.
-
+   
 
 ## Conclusions
 
