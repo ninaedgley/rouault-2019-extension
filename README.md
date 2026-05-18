@@ -1,6 +1,6 @@
 # Rouault et al. (2019) Extension
 Python replication and model extension of Rouault, Dayan, & Fleming (2019), *Forming global estimates of self-performance from local confidence*, Nature Communications.
-[Full write-up](https://ninaedgley.github.io/rouault-exp3-replication/)
+[Full write-up](https://github.com/ninaedgley/rouault-2019-extension/)
 
 
 ## Replication
@@ -16,7 +16,7 @@ The Python MLE M-ratio estimates match the paper's precomputed values to the thi
 
 ## Extension
 
-Four-way Bayesian model comparison testing candidate mechanisms for the paper's systematic underprediction of feedback task preference:
+Proposed a four-way Bayesian model comparison testing candidate mechanisms for the original model's systematic underprediction of feedback task preference:
 
 | Model | Change | Parameters |
 |---|---|---|
