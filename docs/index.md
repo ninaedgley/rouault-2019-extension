@@ -70,9 +70,6 @@ The primary analyses and figures run for Experiment 3 focused on assessing the i
 ### Confidence predicts task choice
 This relationship was tested using 2 paired within-subjects t-tests. Confidence was significantly higher for easy than difficult trials (p < 0.001), confirming the manipulation works.
 
-![Confidence by difficulty](figures/02_fig5a_confidence_accuracy_difficulty.png)
-*Figure 1: Confidence tracks task difficulty — higher for easy trials (green) than difficult trials (red), confirming the difficulty manipulation worked.*
-
 The original analysis proposed a logistic regression to further assess the contribution that different factors exerted on task choice in the absence of feedback. Two models were run (full and reduced) to control for the different regressors. Both models focused on the trial data unique to Experiment 3 : task choices in no-feedback ratings (with explicit confidence ratings). BIC values were computed for both, and used as the basis for a standard model comparison.
 - Full model : 3 regressors - xAcc, xRT, xConf
 - Reduced model : 2 regressors - xAcc, xRT
